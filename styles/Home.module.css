@@ -1,0 +1,119 @@
+.main {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero {
+  text-align: center;
+  padding: 4rem 0;
+}
+
+.title {
+  font-size: 5rem;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(135deg, #1d1d1f 0%, #515154 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.subtitle {
+  font-size: 1.75rem;
+  color: #515154;
+  max-width: 600px;
+  margin: 0 auto 3rem;
+  font-weight: 400;
+  animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.1s backwards;
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.2s backwards;
+}
+
+.primaryButton {
+  background: #1d1d1f;
+  color: white;
+  padding: 1rem 3rem;
+  font-size: 1.125rem;
+  border-radius: 980px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.primaryButton:hover {
+  background: #2d2d2f;
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
+}
+
+.primaryButton:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.secondaryButton {
+  background: transparent;
+  color: #1d1d1f;
+  padding: 1rem 3rem;
+  font-size: 1.125rem;
+  border-radius: 980px;
+  border: 2px solid #1d1d1f;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.secondaryButton:hover {
+  background: #1d1d1f;
+  color: white;
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
+}
+
+.secondaryButton:active {
+  transform: translateY(0) scale(0.98);
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .title {
+    font-size: 3.5rem;
+  }
+
+  .subtitle {
+    font-size: 1.25rem;
+  }
+
+  .buttonGroup {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .primaryButton,
+  .secondaryButton {
+    width: 100%;
+    max-width: 300px;
+  }
+}

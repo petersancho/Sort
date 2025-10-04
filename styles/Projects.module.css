@@ -1,0 +1,243 @@
+.main {
+  min-height: 100vh;
+}
+
+.hero {
+  background: linear-gradient(135deg, #f5f5f7 0%, #ffffff 100%);
+  padding: 8rem 0 6rem;
+  text-align: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.title {
+  font-size: 4.5rem;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(135deg, #1d1d1f 0%, #515154 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.subtitle {
+  font-size: 1.5rem;
+  color: #515154;
+  max-width: 600px;
+  margin: 0 auto;
+  font-weight: 400;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2rem;
+  margin-top: 3rem;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1rem;
+}
+
+.status {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.4rem 0.875rem;
+  border-radius: 100px;
+  background: #34c759;
+  color: white;
+  transition: all 0.15s ease-in-out;
+}
+
+.statusInProgress {
+  background: #0071e3;
+}
+
+.statusPlanning {
+  background: #ff9500;
+}
+
+.projectMeta {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.metaItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.metaLabel {
+  font-size: 0.75rem;
+  color: #86868b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+}
+
+.metaValue {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1d1d1f;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card:hover .metaValue {
+  color: #0071e3;
+}
+
+.capabilitiesSection {
+  background: #f5f5f7;
+}
+
+.sectionTitle {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.capabilitiesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 3rem;
+}
+
+.capability {
+  text-align: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 2rem 1rem;
+  border-radius: 16px;
+}
+
+.capability:hover {
+  transform: translateY(-8px);
+  background: white;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.capabilityIcon {
+  font-size: 3rem;
+  margin-bottom: 1.5rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.capability:hover .capabilityIcon {
+  transform: scale(1.15) rotate(5deg);
+}
+
+.capability h3 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.capability p {
+  font-size: 1rem;
+  color: #515154;
+}
+
+.testimonialSection {
+  background: white;
+  padding: 6rem 0;
+}
+
+.testimonial {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+  padding: 3rem;
+}
+
+.quote {
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 1.875rem;
+  line-height: 1.5;
+  color: #1d1d1f;
+  margin-bottom: 2rem;
+  font-style: italic;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.author {
+  font-size: 1rem;
+  color: #86868b;
+  font-weight: 500;
+}
+
+.ctaSection {
+  background: linear-gradient(135deg, #1d1d1f 0%, #2d2d2f 100%);
+  color: white;
+}
+
+.cta {
+  text-align: center;
+  padding: 4rem 2rem;
+}
+
+.cta h2 {
+  color: white;
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.cta p {
+  color: #d2d2d7;
+  font-size: 1.25rem;
+  margin-bottom: 2.5rem;
+}
+
+.ctaButton {
+  padding: 1rem 2.5rem;
+  font-size: 1.125rem;
+  background: white;
+  color: #1d1d1f;
+  font-weight: 600;
+  transition: all 0.15s ease-in-out;
+}
+
+.ctaButton:hover {
+  background: #f5f5f7;
+  transform: scale(1.05);
+  box-shadow: 0 8px 24px rgba(255, 255, 255, 0.2);
+}
+
+@media (max-width: 768px) {
+  .hero {
+    padding: 4rem 0 3rem;
+  }
+
+  .title {
+    font-size: 3rem;
+  }
+
+  .subtitle {
+    font-size: 1.25rem;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .capabilitiesGrid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .quote {
+    font-size: 1.5rem;
+  }
+
+  .cta h2 {
+    font-size: 2rem;
+  }
+}
