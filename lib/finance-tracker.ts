@@ -38,7 +38,7 @@ export class FinanceTracker {
   private get = promisify(this.db.get.bind(this.db))
 
   async addDocument(document: FinanceDocument): Promise<FinanceDocument> {
-    const result = await this.run(`
+    const result = await (this.run as any)(`
       INSERT INTO finance_documents 
       (name, type, amount, currency, date, category, file_path, project_id, metadata)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -97,11 +97,11 @@ export class FinanceTracker {
 
     query += ' ORDER BY date DESC'
 
-    return await this.all(query, params)
+    return await (this.all as any)(query, params)
   }
 
   async getDocument(id: number): Promise<FinanceDocument | null> {
-    return await this.get('SELECT * FROM finance_documents WHERE id = ?', [id])
+    return await (this.get as any)('SELECT * FROM finance_documents WHERE id = ?', [id])
   }
 
   async updateDocument(id: number, updates: Partial<FinanceDocument>): Promise<void> {
@@ -119,7 +119,7 @@ export class FinanceTracker {
 
     values.push(id)
 
-    await this.run(`
+    await (this.run as any)(`
       UPDATE finance_documents 
       SET ${fields.join(', ')}
       WHERE id = ?
@@ -127,7 +127,7 @@ export class FinanceTracker {
   }
 
   async deleteDocument(id: number): Promise<void> {
-    await this.run('DELETE FROM finance_documents WHERE id = ?', [id])
+    await (this.run as any)('DELETE FROM finance_documents WHERE id = ?', [id])
   }
 
   async getFinancialSummary(): Promise<{
@@ -138,14 +138,14 @@ export class FinanceTracker {
     monthlySpending: { month: string; amount: number }[]
   }> {
     // Total documents and amount
-    const total = await this.get(`
+    const total = await (this.get as any)(`
       SELECT COUNT(*) as count, COALESCE(SUM(amount), 0) as total
       FROM finance_documents
       WHERE amount IS NOT NULL
     `)
 
     // By type
-    const byType = await this.all(`
+    const byType = await (this.all as any)(`
       SELECT type, COUNT(*) as count, COALESCE(SUM(amount), 0) as amount
       FROM finance_documents
       WHERE amount IS NOT NULL
@@ -153,7 +153,7 @@ export class FinanceTracker {
     `)
 
     // By category
-    const byCategory = await this.all(`
+    const byCategory = await (this.all as any)(`
       SELECT category, COUNT(*) as count, COALESCE(SUM(amount), 0) as amount
       FROM finance_documents
       WHERE amount IS NOT NULL
@@ -161,7 +161,7 @@ export class FinanceTracker {
     `)
 
     // Monthly spending
-    const monthlySpending = await this.all(`
+    const monthlySpending = await (this.all as any)(`
       SELECT strftime('%Y-%m', date) as month, COALESCE(SUM(amount), 0) as amount
       FROM finance_documents
       WHERE amount IS NOT NULL AND date IS NOT NULL
@@ -194,7 +194,7 @@ export class FinanceTracker {
       total_allocated: categories.reduce((sum, cat) => sum + cat.allocated, 0)
     }
 
-    await this.run(`
+    await (this.run as any)(`
       INSERT INTO finance_documents (name, type, category, metadata)
       VALUES (?, ?, ?, ?)
     `, [
@@ -206,7 +206,7 @@ export class FinanceTracker {
   }
 
   async getExpenseCategories(): Promise<string[]> {
-    const result = await this.all(`
+    const result = await (this.all as any)(`
       SELECT DISTINCT category 
       FROM finance_documents 
       WHERE category IS NOT NULL
@@ -217,7 +217,7 @@ export class FinanceTracker {
   }
 
   async getRecentExpenses(limit: number = 10): Promise<FinanceDocument[]> {
-    return await this.all(`
+    return await (this.all as any)(`
       SELECT * FROM finance_documents
       WHERE amount IS NOT NULL
       ORDER BY date DESC, created_at DESC
@@ -226,7 +226,7 @@ export class FinanceTracker {
   }
 
   async searchDocuments(query: string): Promise<FinanceDocument[]> {
-    return await this.all(`
+    return await (this.all as any)(`
       SELECT * FROM finance_documents
       WHERE name LIKE ? OR category LIKE ? OR type LIKE ?
       ORDER BY created_at DESC
@@ -252,7 +252,7 @@ export class FinanceTracker {
 
     const summary = await this.getFinancialSummary()
     
-    const categories = await this.all(`
+    const categories = await (this.all as any)(`
       SELECT category, COUNT(*) as count, COALESCE(SUM(amount), 0) as amount
       FROM finance_documents
       WHERE date BETWEEN ? AND ? AND amount IS NOT NULL

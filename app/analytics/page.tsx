@@ -11,7 +11,8 @@ import {
   CheckSquare,
   Calendar,
   Download,
-  Filter
+  Filter,
+  Clock
 } from 'lucide-react'
 
 interface AnalyticsData {

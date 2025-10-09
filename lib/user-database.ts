@@ -122,7 +122,7 @@ export class UserDatabase {
   }
 
   private async insertDefaultRules() {
-    const run = promisify(this.db!.run.bind(this.db!))
+    const run = promisify(this.db!.run.bind(this.db!)) as any
     
     const defaultRules = [
       { name: 'Images', pattern: '\\.(jpg|jpeg|png|gif|bmp|svg|webp)$', category: 'Media', action: 'move_to_media' },

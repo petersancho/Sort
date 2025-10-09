@@ -34,7 +34,7 @@ export class TodoManager {
   private get = promisify(this.db.get.bind(this.db))
 
   async addTodo(todo: Todo): Promise<Todo> {
-    const result = await this.run(`
+    const result = await (this.run as any)(`
       INSERT INTO todos 
       (title, description, priority, status, due_date, project_id, metadata)
       VALUES (?, ?, ?, ?, ?, ?, ?)
@@ -89,11 +89,11 @@ export class TodoManager {
 
     query += ' ORDER BY priority DESC, due_date ASC, created_at DESC'
 
-    return await this.all(query, params)
+    return await (this.all as any)(query, params)
   }
 
   async getTodo(id: number): Promise<Todo | null> {
-    return await this.get('SELECT * FROM todos WHERE id = ?', [id])
+    return await (this.get as any)('SELECT * FROM todos WHERE id = ?', [id])
   }
 
   async updateTodo(id: number, updates: Partial<Todo>): Promise<void> {
@@ -119,7 +119,7 @@ export class TodoManager {
     fields.push('updated_at = CURRENT_TIMESTAMP')
     values.push(id)
 
-    await this.run(`
+    await (this.run as any)(`
       UPDATE todos 
       SET ${fields.join(', ')}
       WHERE id = ?
@@ -127,36 +127,36 @@ export class TodoManager {
   }
 
   async deleteTodo(id: number): Promise<void> {
-    await this.run('DELETE FROM todos WHERE id = ?', [id])
+    await (this.run as any)('DELETE FROM todos WHERE id = ?', [id])
   }
 
   async getTodoStats(): Promise<TodoStats> {
     // Total todos
-    const total = await this.get('SELECT COUNT(*) as count FROM todos')
+    const total: any = await (this.get as any)('SELECT COUNT(*) as count FROM todos')
     
     // By status
-    const statusCounts = await this.all(`
+    const statusCounts = await (this.all as any)(`
       SELECT status, COUNT(*) as count
       FROM todos
       GROUP BY status
     `)
     
     // Overdue todos
-    const overdue = await this.get(`
+    const overdue: any = await (this.get as any)(`
       SELECT COUNT(*) as count
       FROM todos
       WHERE due_date IS NOT NULL AND due_date < date("now") AND status != "completed"
     `)
     
     // By priority
-    const priorityCounts = await this.all(`
+    const priorityCounts = await (this.all as any)(`
       SELECT priority, COUNT(*) as count
       FROM todos
       GROUP BY priority
     `)
     
     // By project
-    const projectCounts = await this.all(`
+    const projectCounts = await (this.all as any)(`
       SELECT p.name, COUNT(t.id) as count
       FROM todos t
       LEFT JOIN projects p ON t.project_id = p.id
@@ -190,7 +190,7 @@ export class TodoManager {
   }
 
   async getTodosByProject(projectId: number): Promise<Todo[]> {
-    return await this.all(`
+    return await (this.all as any)(`
       SELECT * FROM todos
       WHERE project_id = ?
       ORDER BY priority DESC, due_date ASC, created_at DESC
@@ -198,7 +198,7 @@ export class TodoManager {
   }
 
   async getUpcomingTodos(limit: number = 10): Promise<Todo[]> {
-    return await this.all(`
+    return await (this.all as any)(`
       SELECT * FROM todos
       WHERE status != "completed" AND due_date IS NOT NULL
       ORDER BY due_date ASC
@@ -207,7 +207,7 @@ export class TodoManager {
   }
 
   async searchTodos(query: string): Promise<Todo[]> {
-    return await this.all(`
+    return await (this.all as any)(`
       SELECT * FROM todos
       WHERE title LIKE ? OR description LIKE ?
       ORDER BY created_at DESC
@@ -222,7 +222,7 @@ export class TodoManager {
   }
 
   async getCompletedTodos(limit: number = 50): Promise<Todo[]> {
-    return await this.all(`
+    return await (this.all as any)(`
       SELECT * FROM todos
       WHERE status = "completed"
       ORDER BY completed_at DESC
@@ -231,7 +231,7 @@ export class TodoManager {
   }
 
   async getTodosByDateRange(startDate: string, endDate: string): Promise<Todo[]> {
-    return await this.all(`
+    return await (this.all as any)(`
       SELECT * FROM todos
       WHERE created_at BETWEEN ? AND ?
       ORDER BY created_at DESC
@@ -268,7 +268,7 @@ export class TodoManager {
   }
 
   async getTodosWithFiles(): Promise<Todo[]> {
-    return await this.all(`
+    return await (this.all as any)(`
       SELECT * FROM todos
       WHERE metadata LIKE '%files%'
       ORDER BY created_at DESC
@@ -287,7 +287,7 @@ export class TodoManager {
       updateFields += ', completed_at = NULL'
     }
 
-    await this.run(`
+    await (this.run as any)(`
       UPDATE todos 
       SET ${updateFields}
       WHERE id IN (${placeholders})
@@ -296,6 +296,6 @@ export class TodoManager {
 
   async bulkDeleteTodos(todoIds: number[]): Promise<void> {
     const placeholders = todoIds.map(() => '?').join(',')
-    await this.run(`DELETE FROM todos WHERE id IN (${placeholders})`, todoIds)
+    await (this.run as any)(`DELETE FROM todos WHERE id IN (${placeholders})`, todoIds)
   }
 }
