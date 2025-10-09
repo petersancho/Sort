@@ -25,6 +25,7 @@ Thumbs.db
 # Database and data
 /data/*.db
 /data/**/*.db
+Procfile
 
 # Misc
 core

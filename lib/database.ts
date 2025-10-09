@@ -8,7 +8,9 @@ class Database {
   private dbPath: string
 
   constructor() {
-    this.dbPath = path.join(process.cwd(), 'data', 'sort-system.db')
+    const isHeroku = !!process.env.DYNO
+    const baseDataDir = process.env.DATA_DIR || (isHeroku ? path.join(process.env.TMPDIR || '/tmp', 'sort-data') : path.join(process.cwd(), 'data'))
+    this.dbPath = process.env.DATABASE_PATH || path.join(baseDataDir, 'sort-system.db')
   }
 
   async initialize() {
