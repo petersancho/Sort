@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+export const dynamic = 'force-dynamic'
 import { database } from '@/lib/database'
 import { FileScanner } from '@/lib/file-scanner'
 

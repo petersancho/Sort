@@ -212,7 +212,7 @@ Personal project description here
     await this.createProjectStructure(project.path, template)
 
     // Save to database
-    const result = await this.run(`
+    const result = await (this.run as any)(`
       INSERT INTO projects (name, description, path, template, status, metadata)
       VALUES (?, ?, ?, ?, ?, ?)
     `, [
@@ -248,11 +248,11 @@ Personal project description here
   }
 
   async getProjects(): Promise<Project[]> {
-    return await this.all('SELECT * FROM projects ORDER BY created_at DESC')
+    return await (this.all as any)('SELECT * FROM projects ORDER BY created_at DESC')
   }
 
   async getProject(id: number): Promise<Project | null> {
-    return await this.get('SELECT * FROM projects WHERE id = ?', [id])
+    return await (this.get as any)('SELECT * FROM projects WHERE id = ?', [id])
   }
 
   async updateProject(id: number, updates: Partial<Project>): Promise<void> {
@@ -271,7 +271,7 @@ Personal project description here
     fields.push('updated_at = CURRENT_TIMESTAMP')
     values.push(id)
 
-    await this.run(`
+    await (this.run as any)(`
       UPDATE projects 
       SET ${fields.join(', ')}
       WHERE id = ?
@@ -279,7 +279,7 @@ Personal project description here
   }
 
   async deleteProject(id: number): Promise<void> {
-    await this.run('DELETE FROM projects WHERE id = ?', [id])
+    await (this.run as any)('DELETE FROM projects WHERE id = ?', [id])
   }
 
   getAvailableTemplates(): ProjectTemplate[] {
@@ -291,10 +291,10 @@ Personal project description here
   }
 
   async getProjectStats() {
-    const total = await this.get('SELECT COUNT(*) as count FROM projects')
-    const active = await this.get('SELECT COUNT(*) as count FROM projects WHERE status = "active"')
-    const completed = await this.get('SELECT COUNT(*) as count FROM projects WHERE status = "completed"')
-    const archived = await this.get('SELECT COUNT(*) as count FROM projects WHERE status = "archived"')
+    const total: any = await (this.get as any)('SELECT COUNT(*) as count FROM projects')
+    const active: any = await (this.get as any)('SELECT COUNT(*) as count FROM projects WHERE status = "active"')
+    const completed: any = await (this.get as any)('SELECT COUNT(*) as count FROM projects WHERE status = "completed"')
+    const archived: any = await (this.get as any)('SELECT COUNT(*) as count FROM projects WHERE status = "archived"')
 
     return {
       total: total?.count || 0,

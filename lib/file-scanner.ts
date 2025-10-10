@@ -45,12 +45,14 @@ export class FileScanner {
             }
           }
         } catch (itemError) {
-          console.log(`Skipping item ${item} in ${dirPath}:`, itemError.message)
+          const message = itemError instanceof Error ? itemError.message : String(itemError)
+          console.log(`Skipping item ${item} in ${dirPath}:`, message)
           continue
         }
       }
     } catch (error) {
-      console.error(`Error scanning directory ${dirPath}:`, error.message)
+      const message = error instanceof Error ? error.message : String(error)
+      console.error(`Error scanning directory ${dirPath}:`, message)
     }
     
     return files
@@ -128,7 +130,7 @@ export class FileScanner {
   async saveFilesToDatabase(files: FileInfo[]) {
     for (const file of files) {
       try {
-        await this.run(`
+        await (this.run as any)(`
           INSERT OR REPLACE INTO files 
           (path, name, extension, size, created_at, modified_at, category, metadata)
           VALUES (?, ?, ?, ?, ?, ?, ?, ?)
@@ -149,13 +151,13 @@ export class FileScanner {
   }
 
   async getSystemStats() {
-    const totalFiles = await this.all('SELECT COUNT(*) as count FROM files')
-    const organizedFiles = await this.all(`
+    const totalFiles = await (this.all as any)('SELECT COUNT(*) as count FROM files')
+    const organizedFiles = await (this.all as any)`
       SELECT COUNT(*) as count FROM files 
       WHERE category IS NOT NULL AND category != 'Other'
-    `)
-    const projects = await this.all('SELECT COUNT(*) as count FROM projects WHERE status = "active"')
-    const todos = await this.all('SELECT COUNT(*) as count FROM todos WHERE status != "completed"')
+    `
+    const projects = await (this.all as any)('SELECT COUNT(*) as count FROM projects WHERE status = "active"')
+    const todos = await (this.all as any)('SELECT COUNT(*) as count FROM todos WHERE status != "completed"')
     
     return {
       totalFiles: totalFiles[0]?.count || 0,
@@ -177,11 +179,11 @@ export class FileScanner {
     query += ' ORDER BY modified_at DESC LIMIT ?'
     params.push(limit)
     
-    return await this.all(query, params)
+    return await (this.all as any)(query, params)
   }
 
   async getRecentFiles(limit: number = 20) {
-    return await this.all(`
+    return await (this.all as any)(`
       SELECT * FROM files 
       ORDER BY modified_at DESC 
       LIMIT ?

@@ -8,7 +8,9 @@ class Database {
   private dbPath: string
 
   constructor() {
-    this.dbPath = path.join(process.cwd(), 'data', 'sort-system.db')
+    const isHeroku = !!process.env.DYNO
+    const baseDataDir = process.env.DATA_DIR || (isHeroku ? path.join(process.env.TMPDIR || '/tmp', 'sort-data') : path.join(process.cwd(), 'data'))
+    this.dbPath = process.env.DATABASE_PATH || path.join(baseDataDir, 'sort-system.db')
   }
 
   async initialize() {
@@ -100,12 +102,31 @@ class Database {
       )
     `)
 
+    // Calendar events table
+    await run(`
+      CREATE TABLE IF NOT EXISTS calendar_events (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        title TEXT NOT NULL,
+        description TEXT,
+        start DATETIME NOT NULL,
+        end DATETIME NOT NULL,
+        all_day BOOLEAN DEFAULT 0,
+        project_id INTEGER,
+        todo_id INTEGER,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        metadata TEXT,
+        FOREIGN KEY (project_id) REFERENCES projects (id),
+        FOREIGN KEY (todo_id) REFERENCES todos (id)
+      )
+    `)
+
     // Insert default sorting rules
     await this.insertDefaultRules()
   }
 
   private async insertDefaultRules() {
-    const run = promisify(this.db!.run.bind(this.db!))
+    const run = promisify(this.db!.run.bind(this.db!)) as any
     
     const defaultRules = [
       { name: 'Images', pattern: '\\.(jpg|jpeg|png|gif|bmp|svg|webp)$', category: 'Media', action: 'move_to_media' },

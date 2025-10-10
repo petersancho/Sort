@@ -37,7 +37,8 @@ export async function POST(request: NextRequest) {
           }
         }
       } catch (error) {
-        console.log(`Directory ${dir} not accessible:`, error.message)
+        const message = error instanceof Error ? error.message : String(error)
+        console.log(`Directory ${dir} not accessible:`, message)
       }
     }
     
@@ -76,8 +77,9 @@ export async function POST(request: NextRequest) {
     
   } catch (error) {
     console.error('Scan error:', error)
+    const message = error instanceof Error ? error.message : String(error)
     return NextResponse.json(
-      { success: false, error: 'Failed to scan files: ' + error.message },
+      { success: false, error: 'Failed to scan files: ' + message },
       { status: 500 }
     )
   }
