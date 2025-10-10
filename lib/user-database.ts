@@ -8,8 +8,12 @@ export class UserDatabase {
   private dbPath: string
 
   constructor(userId: string) {
-    const dataDir = path.join(process.cwd(), 'data', 'users', userId)
-    this.dbPath = path.join(dataDir, 'user-data.db')
+    const isHeroku = !!process.env.DYNO
+    const baseDataDir = process.env.DATA_DIR || (isHeroku
+      ? path.join(process.env.TMPDIR || '/tmp', 'sort-data')
+      : path.join(process.cwd(), 'data'))
+    const userDir = path.join(baseDataDir, 'users', userId)
+    this.dbPath = path.join(userDir, 'user-data.db')
   }
 
   async initialize() {

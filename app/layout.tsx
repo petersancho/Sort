@@ -8,6 +8,9 @@ export const metadata: Metadata = {
   description: 'Comprehensive file organization system for projects, finances, and task management',
 }
 
+// Force dynamic rendering to avoid static generation issues on some Node versions
+export const dynamic = 'force-dynamic'
+
 export default function RootLayout({
   children,
 }: {
