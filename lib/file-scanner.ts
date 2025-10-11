@@ -17,8 +17,8 @@ export interface FileInfo {
 
 export class FileScanner {
   private db = database.getDB()
-  private run = promisify(this.db.run.bind(this.db))
-  private all = promisify(this.db.all.bind(this.db))
+  private run = promisify(this.db.run.bind(this.db)) as any
+  private all = promisify(this.db.all.bind(this.db)) as any
 
   async scanDirectory(dirPath: string, recursive: boolean = true): Promise<FileInfo[]> {
     const files: FileInfo[] = []

@@ -1,10 +1,18 @@
-import sqlite3 from 'sqlite3'
+// Lazy-load sqlite3 to avoid native binding during Next build static analysis
+let _sqlite3: any
+function getSqlite3() {
+  if (!_sqlite3) {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    _sqlite3 = require('sqlite3')
+  }
+  return _sqlite3
+}
 import { promisify } from 'util'
 import path from 'path'
 import fs from 'fs-extra'
 
 class Database {
-  private db: sqlite3.Database | null = null
+  private db: any | null = null
   private dbPath: string
 
   constructor() {
@@ -16,6 +24,7 @@ class Database {
   async initialize() {
     await fs.ensureDir(path.dirname(this.dbPath))
     
+    const sqlite3 = getSqlite3()
     this.db = new sqlite3.Database(this.dbPath)
     
     const run = promisify(this.db.run.bind(this.db))
