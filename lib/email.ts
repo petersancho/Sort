@@ -15,7 +15,10 @@ export async function sendEmail({ to, subject, text, html }: SendEmailOptions): 
   const from = process.env.FROM_EMAIL || process.env.SMTP_FROM || 'no-reply@sort-system.local'
 
   if (!host || !user || !pass) {
-    console.warn('Email not configured. Set SMTP_HOST, SMTP_USER, SMTP_PASS (and optional SMTP_PORT, FROM_EMAIL).')
+    console.log(`[EMAIL] Would send to ${to}`)
+    console.log(`[EMAIL] Subject: ${subject}`)
+    console.log(`[EMAIL] Body: ${text || html}`)
+    console.log('[EMAIL] SMTP not configured. Set SMTP_HOST, SMTP_USER, SMTP_PASS to enable real emails.')
     return
   }
 

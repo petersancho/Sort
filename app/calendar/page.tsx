@@ -18,7 +18,7 @@ import {
   isWithinInterval,
   parseISO
 } from 'date-fns'
-import { Calendar as CalendarIcon, Plus, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Calendar as CalendarIcon, Plus, ChevronLeft, ChevronRight, X, Edit, Trash2 } from 'lucide-react'
 
 interface CalendarEvent {
   id: number
@@ -37,6 +37,8 @@ export default function CalendarPage() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [showAddModal, setShowAddModal] = useState(false)
+  const [showEditModal, setShowEditModal] = useState(false)
+  const [editingEvent, setEditingEvent] = useState<CalendarEvent | null>(null)
   const [newEvent, setNewEvent] = useState({
     title: '',
     description: '',
@@ -116,6 +118,50 @@ export default function CalendarPage() {
     }
   }
 
+  const handleDeleteEvent = async (eventId: number) => {
+    if (!confirm('Delete this event?')) return
+    try {
+      const res = await fetch(`/api/calendar/${eventId}`, { method: 'DELETE' })
+      const data = await res.json()
+      if (data.success) {
+        loadEvents()
+      }
+    } catch (err) {
+      console.error('Failed to delete event', err)
+    }
+  }
+
+  const openEditModal = (event: CalendarEvent) => {
+    setEditingEvent(event)
+    setShowEditModal(true)
+  }
+
+  const submitEditEvent = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!editingEvent) return
+    try {
+      const res = await fetch(`/api/calendar/${editingEvent.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: editingEvent.title,
+          description: editingEvent.description,
+          start: editingEvent.start,
+          end: editingEvent.end,
+          all_day: editingEvent.all_day
+        })
+      })
+      const data = await res.json()
+      if (data.success) {
+        setShowEditModal(false)
+        setEditingEvent(null)
+        loadEvents()
+      }
+    } catch (err) {
+      console.error('Failed to update event', err)
+    }
+  }
+
   const eventsForDay = (day: Date) => {
     return events.filter(ev =>
       isWithinInterval(day, { start: parseISO(ev.start), end: parseISO(ev.end) })
@@ -190,8 +236,24 @@ export default function CalendarPage() {
                 </div>
                 <div className="space-y-1 overflow-hidden">
                   {dayEvents.slice(0, 3).map(ev => (
-                    <div key={ev.id} className="truncate text-xs px-2 py-1 rounded bg-primary-100 text-primary-800 dark:bg-primary-900 dark:text-primary-200">
-                      {ev.title}
+                    <div 
+                      key={ev.id} 
+                      className="group truncate text-xs px-2 py-1 rounded bg-primary-100 text-primary-800 dark:bg-primary-900 dark:text-primary-200 flex items-center justify-between hover:bg-primary-200"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        openEditModal(ev)
+                      }}
+                    >
+                      <span className="truncate flex-1">{ev.title}</span>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleDeleteEvent(ev.id)
+                        }}
+                        className="opacity-0 group-hover:opacity-100 ml-1 hover:text-red-600"
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </button>
                     </div>
                   ))}
                   {dayEvents.length > 3 && (
@@ -206,8 +268,17 @@ export default function CalendarPage() {
         {/* Add Event Modal */}
         {showAddModal && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-            <div className="card p-6 w-full max-w-md mx-4">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Add Event</h2>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="card p-6 w-full max-w-md mx-4"
+            >
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Add Event</h2>
+                <button onClick={() => setShowAddModal(false)} className="text-gray-500 hover:text-gray-700">
+                  <X className="h-6 w-6" />
+                </button>
+              </div>
               <form onSubmit={submitNewEvent} className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Title</label>
@@ -282,7 +353,62 @@ export default function CalendarPage() {
                   <button type="submit" className="btn-primary flex-1">Add</button>
                 </div>
               </form>
-            </div>
+            </motion.div>
+          </div>
+        )}
+
+        {/* Edit Event Modal */}
+        {showEditModal && editingEvent && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="card p-6 w-full max-w-md mx-4"
+            >
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Edit Event</h2>
+                <button onClick={() => setShowEditModal(false)} className="text-gray-500 hover:text-gray-700">
+                  <X className="h-6 w-6" />
+                </button>
+              </div>
+              <form onSubmit={submitEditEvent} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Title</label>
+                  <input
+                    type="text"
+                    value={editingEvent.title}
+                    onChange={(e) => setEditingEvent({ ...editingEvent, title: e.target.value })}
+                    className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:text-white"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
+                  <textarea
+                    value={editingEvent.description || ''}
+                    onChange={(e) => setEditingEvent({ ...editingEvent, description: e.target.value })}
+                    className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:text-white"
+                    rows={3}
+                  />
+                </div>
+
+                <div className="flex gap-3 pt-2">
+                  <button type="button" onClick={() => setShowEditModal(false)} className="btn-secondary flex-1">Cancel</button>
+                  <button type="submit" className="btn-primary flex-1">Save</button>
+                  <button 
+                    type="button" 
+                    onClick={() => {
+                      handleDeleteEvent(editingEvent.id)
+                      setShowEditModal(false)
+                    }}
+                    className="btn-secondary text-red-600 hover:bg-red-50"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
+              </form>
+            </motion.div>
           </div>
         )}
       </div>

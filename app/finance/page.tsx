@@ -19,7 +19,10 @@ import {
   FolderPlus,
   FolderOpen,
   ExternalLink,
-  Eye
+  Eye,
+  Edit,
+  Trash2,
+  X
 } from 'lucide-react'
 import FileViewer from '@/components/FileViewer'
 
@@ -77,6 +80,8 @@ export default function FinancePage() {
   const [summary, setSummary] = useState<FinancialSummary | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [showAddModal, setShowAddModal] = useState(false)
+  const [showEditModal, setShowEditModal] = useState(false)
+  const [editingDocument, setEditingDocument] = useState<FinanceDocument | null>(null)
   const [showProjectModal, setShowProjectModal] = useState(false)
   const [showFileModal, setShowFileModal] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
@@ -158,6 +163,46 @@ export default function FinancePage() {
       }
     } catch (error) {
       console.error('Failed to add document:', error)
+    }
+  }
+
+  const handleDeleteDocument = async (id: number) => {
+    if (!confirm('Delete this document?')) return
+    try {
+      const response = await fetch(`/api/finance/documents/${id}`, {
+        method: 'DELETE'
+      })
+      if (response.ok) {
+        setDocuments(documents.filter(d => d.id !== id))
+        loadSummary()
+      }
+    } catch (error) {
+      console.error('Failed to delete document:', error)
+    }
+  }
+
+  const openEditModal = (doc: FinanceDocument) => {
+    setEditingDocument(doc)
+    setShowEditModal(true)
+  }
+
+  const submitEditDocument = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!editingDocument) return
+    try {
+      const response = await fetch(`/api/finance/documents/${editingDocument.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(editingDocument)
+      })
+      if (response.ok) {
+        setDocuments(documents.map(d => d.id === editingDocument.id ? editingDocument : d))
+        setShowEditModal(false)
+        setEditingDocument(null)
+        loadSummary()
+      }
+    } catch (error) {
+      console.error('Failed to update document:', error)
     }
   }
 
@@ -363,8 +408,17 @@ export default function FinancePage() {
                         ${doc.amount.toLocaleString()} {doc.currency}
                       </span>
                     )}
-                    <button className="text-primary-600 hover:text-primary-700">
-                      <Download className="h-4 w-4" />
+                    <button
+                      onClick={() => openEditModal(doc)}
+                      className="text-primary-600 hover:text-primary-700"
+                    >
+                      <Edit className="h-4 w-4" />
+                    </button>
+                    <button
+                      onClick={() => handleDeleteDocument(doc.id)}
+                      className="text-red-600 hover:text-red-700"
+                    >
+                      <Trash2 className="h-4 w-4" />
                     </button>
                   </div>
                 </motion.div>
@@ -381,9 +435,14 @@ export default function FinancePage() {
               animate={{ opacity: 1, scale: 1 }}
               className="card p-8 max-w-md w-full mx-4"
             >
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-                Add Financial Document
-              </h2>
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                  Add Financial Document
+                </h2>
+                <button onClick={() => setShowAddModal(false)} className="text-gray-500 hover:text-gray-700">
+                  <X className="h-6 w-6" />
+                </button>
+              </div>
               
               <form onSubmit={handleAddDocument} className="space-y-4">
                 <div>
@@ -491,6 +550,85 @@ export default function FinancePage() {
                     className="btn-primary flex-1"
                   >
                     Add Document
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+
+        {/* Edit Document Modal */}
+        {showEditModal && editingDocument && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="card p-8 max-w-md w-full mx-4"
+            >
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                  Edit Financial Document
+                </h2>
+                <button onClick={() => setShowEditModal(false)} className="text-gray-500 hover:text-gray-700">
+                  <X className="h-6 w-6" />
+                </button>
+              </div>
+              
+              <form onSubmit={submitEditDocument} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Document Name
+                  </label>
+                  <input
+                    type="text"
+                    value={editingDocument.name}
+                    onChange={(e) => setEditingDocument({ ...editingDocument, name: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                    required
+                  />
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Amount
+                    </label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={editingDocument.amount || ''}
+                      onChange={(e) => setEditingDocument({ ...editingDocument, amount: parseFloat(e.target.value) || undefined })}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Category
+                    </label>
+                    <input
+                      type="text"
+                      value={editingDocument.category}
+                      onChange={(e) => setEditingDocument({ ...editingDocument, category: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                      required
+                    />
+                  </div>
+                </div>
+                
+                <div className="flex gap-3 pt-4">
+                  <button
+                    type="button"
+                    onClick={() => setShowEditModal(false)}
+                    className="btn-secondary flex-1"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="btn-primary flex-1"
+                  >
+                    Save Changes
                   </button>
                 </div>
               </form>

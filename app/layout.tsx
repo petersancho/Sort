@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import Header from '@/components/Header'
+import Footer from '@/components/Footer'
 import { AuthProvider } from '@/contexts/AuthContext'
 
 export const dynamic = 'force-dynamic'
@@ -21,11 +22,12 @@ export default function RootLayout({
     <html lang="en">
       <body className="font-sans antialiased">
         <AuthProvider>
-          <div className="min-h-screen bg-white">
+          <div className="min-h-screen bg-white flex flex-col">
             <Header />
-            <main>
+            <main className="flex-1">
               {children}
             </main>
+            <Footer />
           </div>
         </AuthProvider>
       </body>

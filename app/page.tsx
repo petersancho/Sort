@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
+import { useRouter } from 'next/navigation'
 import { 
   FolderOpen, 
   FileText, 
@@ -10,7 +11,9 @@ import {
   Settings, 
   Scan,
   BarChart3,
-  Zap
+  Zap,
+  Plus,
+  X
 } from 'lucide-react'
 
 interface SystemStats {
@@ -29,6 +32,76 @@ export default function HomePage() {
   })
   
   const [isScanning, setIsScanning] = useState(false)
+  const [showNewProjectModal, setShowNewProjectModal] = useState(false)
+  const [showAddTodoModal, setShowAddTodoModal] = useState(false)
+  const router = useRouter()
+
+  const [newProject, setNewProject] = useState({
+    name: '',
+    description: '',
+    template: 'personal-project'
+  })
+
+  const [newTodo, setNewTodo] = useState({
+    title: '',
+    description: '',
+    priority: 'medium' as const,
+    due_date: ''
+  })
+
+  useEffect(() => {
+    loadStats()
+  }, [])
+
+  const loadStats = async () => {
+    try {
+      const response = await fetch('/api/stats')
+      const data = await response.json()
+      if (data.success) {
+        setStats(data.stats)
+      }
+    } catch (error) {
+      console.error('Failed to load stats:', error)
+    }
+  }
+
+  const handleCreateProject = async (e: React.FormEvent) => {
+    e.preventDefault()
+    try {
+      const response = await fetch('/api/projects', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newProject)
+      })
+      const data = await response.json()
+      if (data.success) {
+        setShowNewProjectModal(false)
+        setNewProject({ name: '', description: '', template: 'personal-project' })
+        router.push('/projects')
+      }
+    } catch (error) {
+      console.error('Failed to create project:', error)
+    }
+  }
+
+  const handleCreateTodo = async (e: React.FormEvent) => {
+    e.preventDefault()
+    try {
+      const response = await fetch('/api/todos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newTodo)
+      })
+      const data = await response.json()
+      if (data.success) {
+        setShowAddTodoModal(false)
+        setNewTodo({ title: '', description: '', priority: 'medium', due_date: '' })
+        router.push('/todos')
+      }
+    } catch (error) {
+      console.error('Failed to create todo:', error)
+    }
+  }
 
   const modules = [
     {
@@ -171,11 +244,17 @@ export default function HomePage() {
                 <Scan className="h-5 w-5" />
                 {isScanning ? 'Scanning...' : 'Scan All Files'}
               </button>
-              <button className="btn-secondary flex items-center gap-2">
+              <button 
+                onClick={() => setShowNewProjectModal(true)}
+                className="btn-secondary flex items-center gap-2"
+              >
                 <FolderOpen className="h-5 w-5" />
                 New Project
               </button>
-              <button className="btn-secondary flex items-center gap-2">
+              <button 
+                onClick={() => setShowAddTodoModal(true)}
+                className="btn-secondary flex items-center gap-2"
+              >
                 <CheckSquare className="h-5 w-5" />
                 Add Todo
               </button>
@@ -216,6 +295,173 @@ export default function HomePage() {
             )
           })}
         </motion.div>
+
+        {/* New Project Modal */}
+        {showNewProjectModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="card p-8 max-w-md w-full mx-4"
+            >
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Create New Project</h2>
+                <button onClick={() => setShowNewProjectModal(false)} className="text-gray-500 hover:text-gray-700">
+                  <X className="h-6 w-6" />
+                </button>
+              </div>
+              
+              <form onSubmit={handleCreateProject} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Project Name
+                  </label>
+                  <input
+                    type="text"
+                    value={newProject.name}
+                    onChange={(e) => setNewProject({ ...newProject, name: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                    placeholder="My Awesome Project"
+                    required
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Description
+                  </label>
+                  <textarea
+                    value={newProject.description}
+                    onChange={(e) => setNewProject({ ...newProject, description: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                    rows={3}
+                    placeholder="Project description..."
+                    required
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Template
+                  </label>
+                  <select
+                    value={newProject.template}
+                    onChange={(e) => setNewProject({ ...newProject, template: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                  >
+                    <option value="personal-project">Personal Project</option>
+                    <option value="web-development">Web Development</option>
+                    <option value="design-project">Design Project</option>
+                    <option value="finance-project">Finance Project</option>
+                  </select>
+                </div>
+                
+                <div className="flex gap-3 pt-4">
+                  <button
+                    type="button"
+                    onClick={() => setShowNewProjectModal(false)}
+                    className="btn-secondary flex-1"
+                  >
+                    Cancel
+                  </button>
+                  <button type="submit" className="btn-primary flex-1">
+                    Create Project
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+
+        {/* Add Todo Modal */}
+        {showAddTodoModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="card p-8 max-w-md w-full mx-4"
+            >
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Add New Todo</h2>
+                <button onClick={() => setShowAddTodoModal(false)} className="text-gray-500 hover:text-gray-700">
+                  <X className="h-6 w-6" />
+                </button>
+              </div>
+              
+              <form onSubmit={handleCreateTodo} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Title
+                  </label>
+                  <input
+                    type="text"
+                    value={newTodo.title}
+                    onChange={(e) => setNewTodo({ ...newTodo, title: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                    placeholder="What needs to be done?"
+                    required
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Description
+                  </label>
+                  <textarea
+                    value={newTodo.description}
+                    onChange={(e) => setNewTodo({ ...newTodo, description: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                    rows={3}
+                    placeholder="Additional details..."
+                  />
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Priority
+                    </label>
+                    <select
+                      value={newTodo.priority}
+                      onChange={(e) => setNewTodo({ ...newTodo, priority: e.target.value as any })}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                    >
+                      <option value="low">Low</option>
+                      <option value="medium">Medium</option>
+                      <option value="high">High</option>
+                      <option value="urgent">Urgent</option>
+                    </select>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Due Date
+                    </label>
+                    <input
+                      type="date"
+                      value={newTodo.due_date}
+                      onChange={(e) => setNewTodo({ ...newTodo, due_date: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                    />
+                  </div>
+                </div>
+                
+                <div className="flex gap-3 pt-4">
+                  <button
+                    type="button"
+                    onClick={() => setShowAddTodoModal(false)}
+                    className="btn-secondary flex-1"
+                  >
+                    Cancel
+                  </button>
+                  <button type="submit" className="btn-primary flex-1">
+                    Add Todo
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
       </div>
     </div>
   )
