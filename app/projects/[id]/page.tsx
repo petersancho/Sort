@@ -10,7 +10,6 @@ import {
   FolderOpen,
   Calendar,
   CheckSquare,
-  DollarSign,
   FileText,
   BarChart3,
   Plus,
@@ -50,22 +49,20 @@ export default function ProjectDetailPage() {
 
   const loadWidgets = async () => {
     try {
-      const [todosRes, eventsRes, financeRes] = await Promise.all([
+      const [todosRes, eventsRes] = await Promise.all([
         fetch(`/api/todos?project_id=${projectId}`),
-        fetch('/api/calendar'),
-        fetch(`/api/finance/documents?project_id=${projectId}`)
+        fetch('/api/calendar')
       ])
 
-      const [todosData, eventsData, financeData] = await Promise.all([
+      const [todosData, eventsData] = await Promise.all([
         todosRes.json(),
-        eventsRes.json(),
-        financeData.json()
+        eventsRes.json()
       ])
 
       setWidgets({
         todos: todosData.todos || [],
         events: eventsData.events || [],
-        finances: financeData.documents || [],
+        finances: [],
         files: [],
         stats: null
       })
@@ -152,7 +149,7 @@ export default function ProjectDetailPage() {
             </div>
           </motion.div>
 
-          {/* Finance Widget */}
+          {/* Notes Widget */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -161,39 +158,12 @@ export default function ProjectDetailPage() {
           >
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <DollarSign className="h-5 w-5" />
-                <h3 className="font-bold italic text-gray-900 dark:text-white">FINANCES</h3>
-              </div>
-              <Plus className="h-5 w-5 text-gray-400 cursor-pointer hover:text-black" />
-            </div>
-            <div className="space-y-2">
-              {widgets.finances.slice(0, 5).map((doc: any) => (
-                <div key={doc.id} className="flex items-center justify-between text-sm">
-                  <span className="truncate font-bold">{doc.name}</span>
-                  {doc.amount && <span className="font-bold">${doc.amount}</span>}
-                </div>
-              ))}
-              {widgets.finances.length === 0 && (
-                <p className="text-sm text-gray-500">NO FINANCES YET</p>
-              )}
-            </div>
-          </motion.div>
-
-          {/* Files Widget */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="card p-6"
-          >
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
                 <FileText className="h-5 w-5" />
-                <h3 className="font-bold italic text-gray-900 dark:text-white">FILES</h3>
+                <h3 className="font-bold italic text-gray-900 dark:text-white">NOTES</h3>
               </div>
               <Plus className="h-5 w-5 text-gray-400 cursor-pointer hover:text-black" />
             </div>
-            <p className="text-sm text-gray-500">FILE ASSOCIATIONS COMING SOON</p>
+            <p className="text-sm text-gray-500">PROJECT NOTES AND DOCUMENTATION</p>
           </motion.div>
 
           {/* Analytics Widget */}
@@ -215,7 +185,7 @@ export default function ProjectDetailPage() {
               <div>
                 <p className="text-xs text-gray-500">TOTAL ITEMS</p>
                 <p className="text-2xl font-bold text-black">
-                  {(widgets.todos.length || 0) + (widgets.finances.length || 0)}
+                  {(widgets.todos.length || 0) + (widgets.events.length || 0)}
                 </p>
               </div>
             </div>
