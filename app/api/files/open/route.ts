@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+export const dynamic = 'force-dynamic'
 import { exec } from 'child_process'
 import { promisify } from 'util'
 
@@ -6,7 +7,7 @@ const execAsync = promisify(exec)
 
 export async function POST(request: NextRequest) {
   try {
-    const { path } = await request.json()
+    const { path, app } = await request.json()
     
     if (!path) {
       return NextResponse.json(
@@ -15,8 +16,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // On macOS, use the 'open' command to open files with their default applications
-    const command = `open "${path}"`
+    // On macOS, use the 'open' command (optionally with a specific app)
+    // On Linux/Windows this would need adapting (xdg-open/start)
+    const command = app ? `open -a "${app}" "${path}"` : `open "${path}"`
     
     try {
       await execAsync(command)
