@@ -139,7 +139,7 @@ export default function Header() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden border-t-2 border-black"
+            className="md:hidden border-t border-gray-200"
           >
             <div className="py-2 space-y-1">
               {navigation.map((item) => {
@@ -151,10 +151,10 @@ export default function Header() {
                     key={item.name}
                     href={item.href}
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className={`flex items-center space-x-3 px-3 py-2 rounded-lg text-base font-medium transition-colors ${
+                    className={`flex items-center space-x-3 px-3 py-2 rounded-lg text-base font-medium transition-colors border shadow-sm ${
                       isActive
-                        ? 'bg-black text-white'
-                        : 'text-black hover:text-white hover:bg-black border border-black'
+                        ? 'bg-black text-white border-transparent'
+                        : 'text-black hover:bg-gray-100 border-gray-200'
                     }`}
                   >
                     <IconComponent className="h-5 w-5" />

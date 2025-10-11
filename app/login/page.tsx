@@ -109,7 +109,7 @@ export default function LoginPage() {
             <div className="w-16 h-16 bg-black rounded-lg flex items-center justify-center mx-auto mb-4">
               <span className="text-white font-bold text-2xl">S</span>
             </div>
-            <h1 className="text-3xl font-bold text-black mb-2">
+            <h1 className="text-3xl font-bold italic text-black mb-2">
               {isLogin ? 'Welcome Back' : 'Create Account'}
             </h1>
             <p className="text-black">
