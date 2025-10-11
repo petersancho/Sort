@@ -13,7 +13,11 @@ import {
   Settings,
   Archive,
   CheckCircle,
-  Clock
+  Clock,
+  Edit,
+  Trash2,
+  X,
+  Plus
 } from 'lucide-react'
 
 interface Project {
@@ -39,6 +43,8 @@ export default function ProjectsPage() {
   const [projects, setProjects] = useState<Project[]>([])
   const [templates, setTemplates] = useState<ProjectTemplate[]>([])
   const [showCreateModal, setShowCreateModal] = useState(false)
+  const [showEditModal, setShowEditModal] = useState(false)
+  const [editingProject, setEditingProject] = useState<Project | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [newProject, setNewProject] = useState({
     name: '',
@@ -95,6 +101,46 @@ export default function ProjectsPage() {
       }
     } catch (error) {
       console.error('Failed to create project:', error)
+    }
+  }
+
+  const handleDeleteProject = async (id: number) => {
+    if (!confirm('Delete this project?')) return
+    try {
+      const response = await fetch(`/api/projects/${id}`, { method: 'DELETE' })
+      if (response.ok) {
+        setProjects(projects.filter(p => p.id !== id))
+      }
+    } catch (error) {
+      console.error('Failed to delete project:', error)
+    }
+  }
+
+  const openEditModal = (project: Project) => {
+    setEditingProject(project)
+    setShowEditModal(true)
+  }
+
+  const submitEditProject = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!editingProject) return
+    try {
+      const response = await fetch(`/api/projects/${editingProject.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: editingProject.name,
+          description: editingProject.description,
+          status: editingProject.status
+        })
+      })
+      if (response.ok) {
+        setProjects(projects.map(p => p.id === editingProject.id ? editingProject : p))
+        setShowEditModal(false)
+        setEditingProject(null)
+      }
+    } catch (error) {
+      console.error('Failed to update project:', error)
     }
   }
 
@@ -202,9 +248,26 @@ export default function ProjectsPage() {
                   <span className="text-sm text-gray-500 dark:text-gray-400">
                     {project.template.replace('-', ' ')}
                   </span>
-                  <button className="text-primary-600 hover:text-primary-700 font-medium">
-                    Open →
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        openEditModal(project)
+                      }}
+                      className="text-primary-600 hover:text-primary-700"
+                    >
+                      <Edit className="h-4 w-4" />
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        handleDeleteProject(project.id)
+                      }}
+                      className="text-red-600 hover:text-red-700"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
                 </div>
               </motion.div>
             ))}
@@ -219,9 +282,14 @@ export default function ProjectsPage() {
               animate={{ opacity: 1, scale: 1 }}
               className="card p-8 max-w-md w-full mx-4"
             >
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-                Create New Project
-              </h2>
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                  Create New Project
+                </h2>
+                <button onClick={() => setShowCreateModal(false)} className="text-gray-500 hover:text-gray-700">
+                  <X className="h-6 w-6" />
+                </button>
+              </div>
               
               <form onSubmit={handleCreateProject} className="space-y-4">
                 <div>
@@ -281,6 +349,80 @@ export default function ProjectsPage() {
                     className="btn-primary flex-1"
                   >
                     Create Project
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+
+        {/* Edit Project Modal */}
+        {showEditModal && editingProject && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="card p-8 max-w-md w-full mx-4"
+            >
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Edit Project</h2>
+                <button onClick={() => setShowEditModal(false)} className="text-gray-500 hover:text-gray-700">
+                  <X className="h-6 w-6" />
+                </button>
+              </div>
+              
+              <form onSubmit={submitEditProject} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Project Name
+                  </label>
+                  <input
+                    type="text"
+                    value={editingProject.name}
+                    onChange={(e) => setEditingProject({ ...editingProject, name: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                    required
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Description
+                  </label>
+                  <textarea
+                    value={editingProject.description}
+                    onChange={(e) => setEditingProject({ ...editingProject, description: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                    rows={3}
+                    required
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Status
+                  </label>
+                  <select
+                    value={editingProject.status}
+                    onChange={(e) => setEditingProject({ ...editingProject, status: e.target.value as any })}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                  >
+                    <option value="active">Active</option>
+                    <option value="completed">Completed</option>
+                    <option value="archived">Archived</option>
+                  </select>
+                </div>
+                
+                <div className="flex gap-3 pt-4">
+                  <button
+                    type="button"
+                    onClick={() => setShowEditModal(false)}
+                    className="btn-secondary flex-1"
+                  >
+                    Cancel
+                  </button>
+                  <button type="submit" className="btn-primary flex-1">
+                    Save Changes
                   </button>
                 </div>
               </form>
