@@ -4,16 +4,15 @@
   "description": "Comprehensive file organization system for projects, finances, and task management",
   "main": "index.js",
   "scripts": {
-    "dev": "next dev --turbo false",
+    "dev": "next dev",
     "dev:host": "next dev -H 0.0.0.0 -p 3000",
     "dev:3001": "next dev -H 0.0.0.0 -p 3001",
-    "build": "NEXT_DISABLE_SWC_NATIVE=1 NODE_OPTIONS=--max-old-space-size=512 next build --no-lint",
+    "build": "next build",
     "start": "next start -H 0.0.0.0 -p $PORT",
-    "lint": "next lint",
-    "api": "node server/api.js"
+    "lint": "next lint"
   },
   "engines": {
-    "node": "18.x"
+    "node": "20.x"
   },
   "heroku-postbuild": "npm run build",
   "dependencies": {
@@ -27,7 +26,7 @@
     "fs-extra": "^11.1.0",
     "lucide-react": "^0.292.0",
     "mime-types": "^2.1.0",
-    "next": "13.4.19",
+    "next": "14.1.0",
     "nodemailer": "^7.0.9",
     "postcss": "^8.4.0",
     "react": "^18.0.0",
@@ -41,6 +40,6 @@
     "@types/mime-types": "^3.0.1",
     "@types/nodemailer": "^7.0.2",
     "eslint": "^8.0.0",
-    "eslint-config-next": "13.4.19"
+    "eslint-config-next": "14.1.0"
   }
 }

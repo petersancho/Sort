@@ -1,13 +1,23 @@
 import { NextResponse } from 'next/server'
+export const dynamic = 'force-dynamic'
 import { database } from '@/lib/database'
-import { FileScanner } from '@/lib/file-scanner'
+import { promisify } from 'util'
 
 export async function GET() {
   try {
     await database.initialize()
+    const db = database.getDB()
+    const all = promisify(db.all.bind(db)) as any
     
-    const scanner = new FileScanner()
-    const stats = await scanner.getSystemStats()
+    const projects = await all('SELECT COUNT(*) as count FROM projects WHERE status = "active"')
+    const todos = await all('SELECT COUNT(*) as count FROM todos WHERE status != "completed"')
+    
+    const stats = {
+      totalFiles: 0,
+      organizedFiles: 0,
+      projects: projects[0]?.count || 0,
+      todos: todos[0]?.count || 0
+    }
     
     return NextResponse.json({
       success: true,
