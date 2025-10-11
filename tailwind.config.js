@@ -9,7 +9,7 @@ module.exports = {
     extend: {
       fontFamily: {
         'serif': ['Times New Roman', 'Times', 'serif'],
-        'sans': ['Helvetica', 'Arial', 'sans-serif'],
+        'sans': ['Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif'],
       },
       colors: {
         primary: {

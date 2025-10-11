@@ -15,7 +15,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="font-serif antialiased">
+      <body className="font-sans antialiased">
         <AuthProvider>
           <div className="min-h-screen bg-white">
             <Header />
