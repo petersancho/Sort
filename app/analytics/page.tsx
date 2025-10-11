@@ -10,7 +10,6 @@ import {
   TrendingUp, 
   FileText, 
   FolderOpen,
-  DollarSign,
   CheckSquare,
   Calendar,
   Download,
@@ -38,26 +37,23 @@ export default function AnalyticsPage() {
   const loadAnalyticsData = async () => {
     try {
       // Load real stats from APIs
-      const [statsRes, financeRes, todosRes] = await Promise.all([
+      const [statsRes, todosRes] = await Promise.all([
         fetch('/api/stats'),
-        fetch('/api/finance/summary'),
         fetch('/api/todos/stats')
       ])
 
-      const [statsData, financeData, todosData] = await Promise.all([
+      const [statsData, todosData] = await Promise.all([
         statsRes.json(),
-        financeRes.json(),
         todosRes.json()
       ])
 
       // Transform real data into analytics format
       const filesByCategory = {
-        'Documents': Math.floor(Math.random() * 1000) + 100,
-        'Images': Math.floor(Math.random() * 800) + 100,
-        'Code': Math.floor(Math.random() * 500) + 50,
-        'Media': Math.floor(Math.random() * 300) + 50,
-        'Archives': Math.floor(Math.random() * 200) + 20,
-        'Other': Math.floor(Math.random() * 100) + 10
+        'Projects': statsData.stats?.projects || 0,
+        'Todos': todosData.stats?.total || 0,
+        'Completed': todosData.stats?.completed || 0,
+        'Pending': todosData.stats?.pending || 0,
+        'Overdue': todosData.stats?.overdue || 0
       }
 
       const monthlyGrowth = Array.from({ length: 6 }, (_, i) => {
@@ -65,7 +61,7 @@ export default function AnalyticsPage() {
         date.setMonth(date.getMonth() - (5 - i))
         return {
           month: date.toLocaleDateString('en', { month: 'short' }),
-          files: Math.floor(Math.random() * 200) + 50
+          files: Math.floor(Math.random() * 50) + 10
         }
       })
 
@@ -74,11 +70,11 @@ export default function AnalyticsPage() {
         monthlyGrowth,
         projectStats: {
           'Active Projects': statsData.stats?.projects || 0,
-          'Total Files': statsData.stats?.totalFiles || 0
+          'Total Todos': todosData.stats?.total || 0
         },
         financialSummary: {
-          total: financeData.summary?.totalAmount || 0,
-          monthly: financeData.summary?.monthlySpending?.[0]?.amount || 0
+          total: 0,
+          monthly: 0
         },
         todoStats: {
           completed: todosData.stats?.completed || 0,
@@ -166,12 +162,12 @@ export default function AnalyticsPage() {
           <div className="card p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Financial Total</p>
-                <p className="text-3xl font-bold text-yellow-600">
-                  ${analyticsData?.financialSummary.total.toLocaleString() || '0'}
+                <p className="text-sm font-bold text-gray-600 dark:text-gray-400">ACTIVE PROJECTS</p>
+                <p className="text-3xl font-bold text-gray-900 dark:text-white">
+                  {analyticsData?.projectStats['Active Projects'] || 0}
                 </p>
               </div>
-              <DollarSign className="h-8 w-8 text-yellow-500" />
+              <FolderOpen className="h-8 w-8 text-black" />
             </div>
           </div>
           

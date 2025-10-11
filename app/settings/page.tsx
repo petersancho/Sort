@@ -5,6 +5,7 @@ export const revalidate = 0
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
+import { useTheme } from '@/contexts/ThemeContext'
 import { 
   Settings, 
   Save, 
@@ -17,7 +18,10 @@ import {
   Palette,
   Folder,
   Database,
-  Globe
+  Globe,
+  Moon,
+  Sun,
+  Type
 } from 'lucide-react'
 
 interface SystemSettings {
@@ -32,6 +36,8 @@ interface SystemSettings {
 }
 
 export default function SettingsPage() {
+  const { theme, setTheme, font, setFont } = useTheme()
+  
   const [settings, setSettings] = useState<SystemSettings>({
     autoScan: true,
     scanInterval: 'daily',
@@ -151,12 +157,66 @@ export default function SettingsPage() {
 
         {/* Settings Sections */}
         <div className="space-y-8">
+          {/* Appearance Settings */}
+          <div className="card p-6">
+            <div className="flex items-center gap-3 mb-6">
+              <Palette className="h-6 w-6 text-black" />
+              <h2 className="text-xl font-bold italic text-gray-900 dark:text-white">
+                APPEARANCE
+              </h2>
+            </div>
+            
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="font-bold text-gray-900 dark:text-white">DARK MODE</h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">
+                    SWITCH BETWEEN LIGHT AND DARK THEMES
+                  </p>
+                </div>
+                <button
+                  onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors"
+                >
+                  {theme === 'dark' ? (
+                    <>
+                      <Moon className="h-5 w-5" />
+                      <span className="font-bold">DARK</span>
+                    </>
+                  ) : (
+                    <>
+                      <Sun className="h-5 w-5" />
+                      <span className="font-bold">LIGHT</span>
+                    </>
+                  )}
+                </button>
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="font-bold text-gray-900 dark:text-white">FONT FAMILY</h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">
+                    CHOOSE YOUR PREFERRED TYPOGRAPHY
+                  </p>
+                </div>
+                <select
+                  value={font}
+                  onChange={(e) => setFont(e.target.value as any)}
+                  className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white font-bold"
+                >
+                  <option value="system">HELVETICA NEUE</option>
+                  <option value="times">TIMES NEW ROMAN</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          
           {/* File Scanner Settings */}
           <div className="card p-6">
             <div className="flex items-center gap-3 mb-6">
-              <Folder className="h-6 w-6 text-blue-500" />
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-                File Scanner
+              <Folder className="h-6 w-6 text-black" />
+              <h2 className="text-xl font-bold italic text-gray-900 dark:text-white">
+                PROJECT SETTINGS
               </h2>
             </div>
             

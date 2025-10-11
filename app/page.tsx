@@ -112,43 +112,36 @@ export default function HomePage() {
 
   const modules = [
     {
-      title: 'File Scanner',
-      description: 'Intelligent file categorization and organization',
-      icon: Scan,
-      color: 'bg-black',
-      href: '/scanner'
-    },
-    {
-      title: 'Project Manager',
-      description: 'Template-based project organization',
+      title: 'PROJECTS',
+      description: 'ORGANIZE YOUR WORK AND LIFE IN ONE PLACE',
       icon: FolderOpen,
       color: 'bg-black',
       href: '/projects'
     },
     {
-      title: 'Finance Tracker',
-      description: 'Financial document organization',
-      icon: DollarSign,
+      title: 'CALENDAR',
+      description: 'SCHEDULE AND TRACK YOUR EVENTS',
+      icon: CalendarIcon,
       color: 'bg-black',
-      href: '/finance'
+      href: '/calendar'
     },
     {
-      title: 'Todo System',
-      description: 'Task management with file associations',
+      title: 'TODOS',
+      description: 'MANAGE TASKS FROM TODAY TO 10 YEARS',
       icon: CheckSquare,
       color: 'bg-black',
       href: '/todos'
     },
     {
-      title: 'Analytics',
-      description: 'System usage and file insights',
+      title: 'ANALYTICS',
+      description: 'INSIGHTS INTO YOUR PRODUCTIVITY',
       icon: BarChart3,
       color: 'bg-black',
       href: '/analytics'
     },
     {
-      title: 'Settings',
-      description: 'Customize sorting rules and preferences',
+      title: 'SETTINGS',
+      description: 'CUSTOMIZE YOUR EXPERIENCE',
       icon: Settings,
       color: 'bg-black',
       href: '/settings'
@@ -236,29 +229,21 @@ export default function HomePage() {
           className="mb-12"
         >
           <div className="card p-6">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Quick Actions</h2>
+            <h2 className="text-2xl font-bold italic text-gray-900 dark:text-white mb-4">Quick Actions</h2>
             <div className="flex flex-wrap gap-4">
               <button 
-                onClick={handleScanFiles}
-                disabled={isScanning}
+                onClick={() => setShowNewProjectModal(true)}
                 className="btn-primary flex items-center gap-2"
               >
-                <Scan className="h-5 w-5" />
-                {isScanning ? 'Scanning...' : 'Scan All Files'}
-              </button>
-              <button 
-                onClick={() => setShowNewProjectModal(true)}
-                className="btn-secondary flex items-center gap-2"
-              >
-                <FolderOpen className="h-5 w-5" />
-                New Project
+                <Plus className="h-5 w-5" />
+                NEW PROJECT
               </button>
               <button 
                 onClick={() => setShowAddTodoModal(true)}
                 className="btn-secondary flex items-center gap-2"
               >
-                <CheckSquare className="h-5 w-5" />
-                Add Todo
+                <Plus className="h-5 w-5" />
+                ADD TODO
               </button>
             </div>
           </div>
@@ -468,3 +453,4 @@ export default function HomePage() {
     </div>
   )
 }
+

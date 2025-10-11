@@ -29,10 +29,10 @@ export default function Footer() {
           <div>
             <h3 className="font-bold text-black mb-4 font-serif italic">Quick Links</h3>
             <ul className="space-y-2 text-sm">
-              <li><Link href="/scanner" className="text-gray-600 hover:text-black transition-colors">File Scanner</Link></li>
               <li><Link href="/projects" className="text-gray-600 hover:text-black transition-colors">Projects</Link></li>
-              <li><Link href="/finance" className="text-gray-600 hover:text-black transition-colors">Finance</Link></li>
               <li><Link href="/calendar" className="text-gray-600 hover:text-black transition-colors">Calendar</Link></li>
+              <li><Link href="/todos" className="text-gray-600 hover:text-black transition-colors">Todos</Link></li>
+              <li><Link href="/analytics" className="text-gray-600 hover:text-black transition-colors">Analytics</Link></li>
             </ul>
           </div>
 
@@ -40,9 +40,9 @@ export default function Footer() {
           <div>
             <h3 className="font-bold text-black mb-4 font-serif italic">Tools</h3>
             <ul className="space-y-2 text-sm">
-              <li><Link href="/todos" className="text-gray-600 hover:text-black transition-colors">Todos</Link></li>
-              <li><Link href="/analytics" className="text-gray-600 hover:text-black transition-colors">Analytics</Link></li>
               <li><Link href="/settings" className="text-gray-600 hover:text-black transition-colors">Settings</Link></li>
+              <li><Link href="/support" className="text-gray-600 hover:text-black transition-colors">Support</Link></li>
+              <li><Link href="/contact" className="text-gray-600 hover:text-black transition-colors">Contact</Link></li>
             </ul>
           </div>
 

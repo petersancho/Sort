@@ -33,25 +33,6 @@ class Database {
 
     // Create tables
     await run(`
-      CREATE TABLE IF NOT EXISTS files (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        path TEXT UNIQUE NOT NULL,
-        name TEXT NOT NULL,
-        extension TEXT,
-        size INTEGER,
-        created_at DATETIME,
-        modified_at DATETIME,
-        category TEXT,
-        project_id INTEGER,
-        todo_id INTEGER,
-        tags TEXT,
-        metadata TEXT,
-        FOREIGN KEY (project_id) REFERENCES projects (id),
-        FOREIGN KEY (todo_id) REFERENCES todos (id)
-      )
-    `)
-
-    await run(`
       CREATE TABLE IF NOT EXISTS projects (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
@@ -82,34 +63,6 @@ class Database {
       )
     `)
 
-    await run(`
-      CREATE TABLE IF NOT EXISTS finance_documents (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL,
-        type TEXT NOT NULL,
-        amount DECIMAL(10,2),
-        currency TEXT DEFAULT 'USD',
-        date DATE,
-        category TEXT,
-        file_path TEXT,
-        project_id INTEGER,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        metadata TEXT,
-        FOREIGN KEY (project_id) REFERENCES projects (id)
-      )
-    `)
-
-    await run(`
-      CREATE TABLE IF NOT EXISTS sorting_rules (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL,
-        pattern TEXT NOT NULL,
-        category TEXT NOT NULL,
-        action TEXT NOT NULL,
-        enabled BOOLEAN DEFAULT 1,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-      )
-    `)
 
     // Calendar events table
     await run(`
@@ -130,29 +83,6 @@ class Database {
       )
     `)
 
-    // Insert default sorting rules
-    await this.insertDefaultRules()
-  }
-
-  private async insertDefaultRules() {
-    const run = promisify(this.db!.run.bind(this.db!)) as any
-    
-    const defaultRules = [
-      { name: 'Images', pattern: '\\.(jpg|jpeg|png|gif|bmp|svg|webp)$', category: 'Media', action: 'move_to_media' },
-      { name: 'Documents', pattern: '\\.(pdf|doc|docx|txt|rtf|odt)$', category: 'Documents', action: 'move_to_documents' },
-      { name: 'Spreadsheets', pattern: '\\.(xls|xlsx|csv|ods)$', category: 'Spreadsheets', action: 'move_to_spreadsheets' },
-      { name: 'Code Files', pattern: '\\.(js|ts|jsx|tsx|py|java|cpp|c|cs|php|rb|go|rs)$', category: 'Code', action: 'move_to_code' },
-      { name: 'Archives', pattern: '\\.(zip|rar|7z|tar|gz)$', category: 'Archives', action: 'move_to_archives' },
-      { name: 'Videos', pattern: '\\.(mp4|avi|mov|wmv|flv|webm|mkv)$', category: 'Media', action: 'move_to_media' },
-      { name: 'Audio', pattern: '\\.(mp3|wav|flac|aac|ogg|m4a)$', category: 'Media', action: 'move_to_media' },
-    ]
-
-    for (const rule of defaultRules) {
-      await run(`
-        INSERT OR IGNORE INTO sorting_rules (name, pattern, category, action)
-        VALUES (?, ?, ?, ?)
-      `, [rule.name, rule.pattern, rule.category, rule.action])
-    }
   }
 
   getDB() {
