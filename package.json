@@ -13,7 +13,7 @@
     "api": "node server/api.js"
   },
   "engines": {
-    "node": "20.x"
+    "node": "18.x"
   },
   "heroku-postbuild": "npm run build",
   "dependencies": {
