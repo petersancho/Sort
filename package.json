@@ -7,7 +7,7 @@
     "dev": "next dev --turbo false",
     "dev:host": "next dev -H 0.0.0.0 -p 3000",
     "dev:3001": "next dev -H 0.0.0.0 -p 3001",
-    "build": "NEXT_DISABLE_SWC_NATIVE=1 NODE_OPTIONS=--max-old-space-size=512 next build --no-lint",
+    "build": "NEXT_DISABLE_SWC_NATIVE=1 NODE_OPTIONS=--max-old-space-size=512 next build --no-lint --no-external @swc/core",
     "start": "next start -H 0.0.0.0 -p $PORT",
     "lint": "next lint",
     "api": "node server/api.js"

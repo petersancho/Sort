@@ -2,6 +2,8 @@
 const nextConfig = {
   output: 'standalone',
   reactStrictMode: true,
+  swcMinify: false,
+  compress: false,
   // Force all routes to be dynamic to avoid static export crashes on Heroku
   // and reduce concurrency during build
   experimental: {
