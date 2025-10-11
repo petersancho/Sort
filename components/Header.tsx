@@ -39,7 +39,7 @@ export default function Header() {
   const [showUserMenu, setShowUserMenu] = useState(false)
 
   return (
-    <header className="bg-white border-b-2 border-black sticky top-0 z-50">
+    <header className="bg-white sticky top-0 z-50 border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
@@ -55,7 +55,7 @@ export default function Header() {
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex space-x-8">
+          <nav className="hidden md:flex space-x-2">
             {navigation.map((item) => {
               const IconComponent = item.icon
               const isActive = pathname === item.href
@@ -64,10 +64,10 @@ export default function Header() {
                 <Link
                   key={item.name}
                   href={item.href}
-                  className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm ${
                     isActive
                       ? 'bg-black text-white'
-                      : 'text-black hover:text-white hover:bg-black border border-black'
+                      : 'text-black hover:bg-gray-100 border border-gray-200'
                   }`}
                 >
                   <IconComponent className="h-4 w-4" />
@@ -85,7 +85,7 @@ export default function Header() {
               <div className="relative">
                 <button
                   onClick={() => setShowUserMenu(!showUserMenu)}
-                  className="flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium text-black hover:bg-gray-100 border border-black"
+                  className="flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium text-black hover:bg-gray-100 border border-gray-200 shadow-sm"
                 >
                   <User className="h-4 w-4" />
                   <span>{user.username}</span>

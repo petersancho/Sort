@@ -11,28 +11,35 @@
 body {
   color: rgb(var(--foreground-rgb));
   background: rgb(var(--background-rgb));
-  font-family: 'Times New Roman', Times, serif;
+  font-family: 'Helvetica', 'Arial', sans-serif;
+  text-transform: uppercase;
 }
 
 @layer base {
   * {
-    @apply border-black;
+    @apply border-transparent;
   }
   body {
     @apply bg-white text-black;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Times New Roman', Times, serif;
+    font-weight: 700;
+    font-style: italic;
+    text-transform: none;
   }
 }
 
 @layer components {
   .card {
-    @apply bg-white rounded-lg shadow-lg border-2 border-black;
+    @apply bg-white rounded-2xl shadow-xl border border-gray-200;
   }
   
   .btn-primary {
-    @apply bg-black hover:bg-gray-800 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 border border-black;
+    @apply bg-black/90 hover:bg-black text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 shadow-sm;
   }
   
   .btn-secondary {
-    @apply bg-white hover:bg-gray-100 text-black font-medium py-2 px-4 rounded-lg transition-colors duration-200 border-2 border-black;
+    @apply bg-white hover:bg-gray-100 text-black font-medium py-2 px-4 rounded-lg transition-colors duration-200 border border-gray-200 shadow-sm;
   }
 }

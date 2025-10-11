@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 export const dynamic = 'force-dynamic'
 import { authManager } from '@/lib/auth'
 import { getUserDatabase } from '@/lib/user-database'
+import { sendEmail } from '@/lib/email'
 
 export async function POST(request: NextRequest) {
   try {
@@ -27,6 +28,17 @@ export async function POST(request: NextRequest) {
       // Initialize user database
       const userDb = getUserDatabase(result.user.id)
       await userDb.initialize()
+
+      // Send welcome email (best-effort)
+      try {
+        await sendEmail({
+          to: result.user.email,
+          subject: 'Welcome to Sort System',
+          text: `Hi ${result.user.username}, welcome to Sort System!`,
+        })
+      } catch (e) {
+        console.warn('Email send skipped/failed:', (e as Error)?.message)
+      }
 
       return NextResponse.json({
         success: true,
