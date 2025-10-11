@@ -4,6 +4,9 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: false,
   compress: false,
+  images: {
+    unoptimized: true,
+  },
   // Force all routes to be dynamic to avoid static export crashes on Heroku
   // and reduce concurrency during build
   experimental: {
