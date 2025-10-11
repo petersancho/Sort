@@ -3,21 +3,80 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-rgb: 255, 255, 255;
-  --border-rgb: 0, 0, 0;
+  /* Monochrome palette */
+  --bw-0: #ffffff;
+  --bw-50: #f6f6f6;
+  --bw-100: #eeeeee;
+  --bw-200: #e5e5e5;
+  --bw-300: #cccccc;
+  --bw-400: #b3b3b3;
+  --bw-500: #999999;
+  --bw-600: #777777;
+  --bw-700: #555555;
+  --bw-800: #333333;
+  --bw-900: #111111;
+  --bw-1000: #000000;
+
+  /* Semantic tokens */
+  --bg: var(--bw-0);
+  --fg: var(--bw-1000);
+  --muted: var(--bw-600);
+  --muted-strong: var(--bw-400);
+  --border: color-mix(in oklch, var(--fg) 12%, var(--bg));
+  --card-bg: color-mix(in oklch, var(--bg) 98%, var(--fg));
+  --card-hover-bg: color-mix(in oklch, var(--bg) 96%, var(--fg));
+  --surface: color-mix(in oklch, var(--bg) 96%, var(--fg));
+  --accent: var(--bw-0);
+
+  /* Typography */
   --font-body: 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+
+  /* Layout */
+  --max-w: 1600px;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-lg: 18px;
+  --gap: clamp(12px, 2vw, 24px);
+  --pad: clamp(12px, 2vw, 24px);
+
+  /* Motion */
+  --easing: cubic-bezier(.2,.8,.2,1);
+  --fast: 120ms;
+  --norm: 200ms;
+  --slow: 360ms;
 }
 
 html[data-theme="dark"] {
-  --foreground-rgb: 234, 234, 234;
-  --background-rgb: 11, 11, 11;
-  --border-rgb: 64, 64, 64;
+  --bg: var(--bw-1000);
+  --fg: var(--bw-0);
+  --muted: var(--bw-400);
+  --muted-strong: var(--bw-600);
+  --border: color-mix(in oklch, var(--fg) 12%, var(--bg));
+  --card-bg: color-mix(in oklch, var(--bg) 92%, var(--fg));
+  --card-hover-bg: color-mix(in oklch, var(--bg) 88%, var(--fg));
+  --surface: color-mix(in oklch, var(--bg) 96%, var(--fg));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --fast: 0ms;
+    --norm: 0ms;
+    --slow: 0ms;
+  }
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+html, body {
+  background: var(--bg);
+  color: var(--fg);
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: rgb(var(--background-rgb));
   font-family: var(--font-body);
   text-transform: uppercase;
   font-weight: 700;
@@ -25,6 +84,16 @@ body {
 
 input, textarea, select, button, label, p, span, div {
   font-family: var(--font-body);
+}
+
+a {
+  color: var(--fg);
+  text-decoration: none;
+  outline: none;
+}
+a:hover {
+  text-decoration: underline;
+  text-decoration-color: var(--muted-strong);
 }
 
 @layer base {
@@ -42,16 +111,157 @@ input, textarea, select, button, label, p, span, div {
   }
 }
 
+/* Widget system */
+.container-full {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+
+.shell {
+  width: 100%;
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: var(--pad);
+}
+
+.grid-widgets {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--gap);
+}
+
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: calc(var(--pad) * 0.9);
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 0 0 1px color-mix(in oklch, var(--bg) 85%, var(--fg));
+  transition: transform var(--fast) var(--easing), background var(--norm) var(--easing), box-shadow var(--fast) var(--easing), border-color var(--fast) var(--easing);
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  background: var(--card-hover-bg);
+  box-shadow: 0 8px 24px color-mix(in oklch, var(--bg) 70%, var(--fg));
+}
+
+.card-title {
+  font-weight: 600;
+  margin: 0 0 8px 0;
+  color: var(--fg);
+  font-family: 'Times New Roman', Times, serif;
+  font-style: italic;
+}
+
+.card-subtitle {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin-bottom: 12px;
+}
+
+.card-actions {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  opacity: 0;
+  transform: translateY(-6px);
+  display: flex;
+  gap: 8px;
+  transition: opacity var(--fast) var(--easing), transform var(--fast) var(--easing);
+}
+
+.card:hover .card-actions {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--border);
+  padding: 6px 10px;
+  border-radius: 999px;
+  color: var(--fg);
+  background: color-mix(in oklch, var(--bg) 94%, var(--fg));
+  font-size: 0.85rem;
+}
+
+.btn {
+  background: var(--surface);
+  color: var(--fg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  transition: transform var(--fast) var(--easing), background var(--fast) var(--easing), border-color var(--fast) var(--easing);
+  cursor: pointer;
+}
+.btn:hover {
+  transform: translateY(-1px);
+  background: color-mix(in oklch, var(--surface) 80%, var(--fg));
+}
+
+.header-hero {
+  position: relative;
+  width: 100%;
+  border-bottom: 1px solid var(--border);
+  overflow: clip;
+  background: linear-gradient(180deg, var(--bg) 0%, color-mix(in oklch, var(--bg) 90%, var(--fg)) 100%);
+}
+
+.hero-anim::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(180deg, rgba(255,255,255,0.04) 0px, rgba(255,255,255,0.04) 1px, transparent 2px, transparent 4px);
+  opacity: 0.25;
+  mix-blend-mode: soft-light;
+  animation: shimmer 6s var(--easing) infinite alternate;
+}
+
+@keyframes shimmer {
+  0% { opacity: 0.10; }
+  100% { opacity: 0.30; }
+}
+
+.hero-lines svg {
+  display: block;
+  width: 100%;
+  height: clamp(220px, 30vw, 420px);
+}
+
+.reveal {
+  opacity: 0.0;
+  transition: opacity var(--fast) var(--easing), transform var(--fast) var(--easing);
+  transform: translateY(2px);
+}
+
+.reveal-parent:hover .reveal {
+  opacity: 1.0;
+  transform: translateY(0);
+}
+
 @layer components {
-  .card {
-    @apply bg-white rounded-2xl shadow-xl border border-gray-200;
-  }
-  
   .btn-primary {
-    @apply bg-black/90 hover:bg-black text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 shadow-sm;
+    @apply bg-black text-white font-medium py-2 px-4 rounded-lg shadow-sm;
+    transition: transform var(--fast) var(--easing), background var(--norm) var(--easing);
+  }
+  .btn-primary:hover {
+    transform: translateY(-1px);
+    background: var(--bw-900);
   }
   
   .btn-secondary {
-    @apply bg-white hover:bg-gray-100 text-black font-medium py-2 px-4 rounded-lg transition-colors duration-200 border border-gray-200 shadow-sm;
+    @apply bg-white text-black font-medium py-2 px-4 rounded-lg border shadow-sm;
+    border-color: var(--border);
+    transition: transform var(--fast) var(--easing), background var(--fast) var(--easing);
+  }
+  .btn-secondary:hover {
+    transform: translateY(-1px);
+    background: var(--bw-50);
   }
 }

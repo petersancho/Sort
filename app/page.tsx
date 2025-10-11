@@ -6,7 +6,7 @@ export const revalidate = 0
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
-import AnimatedHero from '@/components/AnimatedHero'
+import MonochromeHeader from '@/components/hero/MonochromeHeader'
 import { 
   FolderOpen, 
   FileText, 
@@ -162,16 +162,10 @@ export default function HomePage() {
   }
 
   return (
-    <div className="p-8">
-      <div className="max-w-7xl mx-auto">
-        {/* Animated Hero */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-12"
-        >
-          <AnimatedHero />
-        </motion.div>
+    <main className="container-full">
+      <MonochromeHeader />
+      <div className="shell">
+        <div style={{ marginBottom: 'var(--gap)' }} />
 
         {/* Stats Dashboard */}
         <motion.div 
@@ -450,7 +444,7 @@ export default function HomePage() {
           </div>
         )}
       </div>
-    </div>
+    </main>
   )
 }
 
