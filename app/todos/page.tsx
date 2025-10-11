@@ -100,17 +100,40 @@ export default function TodosPage() {
     }
   }
 
+  const calculateDueDateFromTimeframe = (timeframe: string): string => {
+    const now = new Date()
+    switch (timeframe) {
+      case 'day':
+        return new Date(now.setDate(now.getDate() + 1)).toISOString().split('T')[0]
+      case 'week':
+        return new Date(now.setDate(now.getDate() + 7)).toISOString().split('T')[0]
+      case 'month':
+        return new Date(now.setMonth(now.getMonth() + 1)).toISOString().split('T')[0]
+      case 'year':
+        return new Date(now.setFullYear(now.getFullYear() + 1)).toISOString().split('T')[0]
+      case '5year':
+        return new Date(now.setFullYear(now.getFullYear() + 5)).toISOString().split('T')[0]
+      case '10year':
+        return new Date(now.setFullYear(now.getFullYear() + 10)).toISOString().split('T')[0]
+      default:
+        return new Date(now.setDate(now.getDate() + 1)).toISOString().split('T')[0]
+    }
+  }
+
   const handleAddTodo = async (e: React.FormEvent) => {
     e.preventDefault()
     
     try {
+      const dueDate = newTodo.due_date || calculateDueDateFromTimeframe(newTodo.timeframe)
+      
       const response = await fetch('/api/todos', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...newTodo,
           project_id: newTodo.project_id ? parseInt(newTodo.project_id) : undefined,
-          due_date: newTodo.due_date || undefined
+          due_date: dueDate,
+          metadata: { timeframe: newTodo.timeframe }
         })
       })
       
@@ -123,7 +146,8 @@ export default function TodosPage() {
           description: '',
           priority: 'medium',
           due_date: '',
-          project_id: ''
+          project_id: '',
+          timeframe: 'day'
         })
         loadStats() // Refresh stats
       }
@@ -292,6 +316,31 @@ export default function TodosPage() {
           </div>
         )}
 
+        {/* Timeframe Quick Filters */}
+        <div className="flex gap-2 mb-6 overflow-x-auto">
+          {[
+            { label: 'ALL', value: 'all' },
+            { label: 'TODAY', value: 'day' },
+            { label: 'THIS WEEK', value: 'week' },
+            { label: 'THIS MONTH', value: 'month' },
+            { label: 'THIS YEAR', value: 'year' },
+            { label: '5 YEARS', value: '5year' },
+            { label: '10 YEARS', value: '10year' }
+          ].map(tf => (
+            <button
+              key={tf.value}
+              onClick={() => setSelectedTimeframe(tf.value)}
+              className={`px-4 py-2 rounded-lg text-sm font-bold transition-colors whitespace-nowrap ${
+                selectedTimeframe === tf.value
+                  ? 'bg-black text-white'
+                  : 'bg-white border border-gray-200 text-black hover:bg-gray-100'
+              }`}
+            >
+              {tf.label}
+            </button>
+          ))}
+        </div>
+
         {/* Filters and Search */}
         <div className="card p-6 mb-8">
           <div className="flex flex-col md:flex-row gap-4">
@@ -300,7 +349,7 @@ export default function TodosPage() {
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                 <input
                   type="text"
-                  placeholder="Search todos..."
+                  placeholder="SEARCH TODOS..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
@@ -312,25 +361,25 @@ export default function TodosPage() {
               <select
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value)}
-                className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white font-bold"
               >
-                <option value="">All Status</option>
-                <option value="pending">Pending</option>
-                <option value="in_progress">In Progress</option>
-                <option value="completed">Completed</option>
-                <option value="cancelled">Cancelled</option>
+                <option value="">ALL STATUS</option>
+                <option value="pending">PENDING</option>
+                <option value="in_progress">IN PROGRESS</option>
+                <option value="completed">COMPLETED</option>
+                <option value="cancelled">CANCELLED</option>
               </select>
               
               <select
                 value={filterPriority}
                 onChange={(e) => setFilterPriority(e.target.value)}
-                className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white font-bold"
               >
-                <option value="">All Priorities</option>
-                <option value="urgent">Urgent</option>
-                <option value="high">High</option>
-                <option value="medium">Medium</option>
-                <option value="low">Low</option>
+                <option value="">ALL PRIORITIES</option>
+                <option value="urgent">URGENT</option>
+                <option value="high">HIGH</option>
+                <option value="medium">MEDIUM</option>
+                <option value="low">LOW</option>
               </select>
               
               <button
@@ -338,7 +387,7 @@ export default function TodosPage() {
                 className="btn-secondary flex items-center gap-2"
               >
                 <Filter className="h-4 w-4" />
-                Filter
+                FILTER
               </button>
             </div>
           </div>
@@ -492,32 +541,54 @@ export default function TodosPage() {
                   />
                 </div>
                 
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    TIMEFRAME
+                  </label>
+                  <select
+                    value={newTodo.timeframe}
+                    onChange={(e) => setNewTodo({ 
+                      ...newTodo, 
+                      timeframe: e.target.value as any,
+                      due_date: calculateDueDateFromTimeframe(e.target.value)
+                    })}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white font-bold"
+                  >
+                    <option value="day">TODAY / TOMORROW</option>
+                    <option value="week">THIS WEEK</option>
+                    <option value="month">THIS MONTH</option>
+                    <option value="year">THIS YEAR</option>
+                    <option value="5year">5 YEARS</option>
+                    <option value="10year">10 YEARS</option>
+                  </select>
+                </div>
+
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Priority
+                      PRIORITY
                     </label>
                     <select
                       value={newTodo.priority}
                       onChange={(e) => setNewTodo({ ...newTodo, priority: e.target.value as any })}
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white font-bold"
                     >
-                      <option value="low">Low</option>
-                      <option value="medium">Medium</option>
-                      <option value="high">High</option>
-                      <option value="urgent">Urgent</option>
+                      <option value="low">LOW</option>
+                      <option value="medium">MEDIUM</option>
+                      <option value="high">HIGH</option>
+                      <option value="urgent">URGENT</option>
                     </select>
                   </div>
                   
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Due Date
+                      DUE DATE (OPTIONAL)
                     </label>
                     <input
                       type="date"
                       value={newTodo.due_date}
                       onChange={(e) => setNewTodo({ ...newTodo, due_date: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white font-bold"
                     />
                   </div>
                 </div>
