@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+export const dynamic = 'force-dynamic'
 import { authManager } from '@/lib/auth'
 import { getUserDatabase } from '@/lib/user-database'
 

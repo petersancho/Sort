@@ -26,7 +26,9 @@ export class AuthManager {
   private sessions: Map<string, Session> = new Map()
 
   constructor() {
-    const dataDir = path.join(process.cwd(), 'data')
+    const isHeroku = !!process.env.DYNO
+    const baseDataDir = process.env.DATA_DIR || (isHeroku ? path.join(process.env.TMPDIR || '/tmp', 'sort-data') : path.join(process.cwd(), 'data'))
+    const dataDir = baseDataDir
     this.usersFile = path.join(dataDir, 'users.json')
     this.sessionsFile = path.join(dataDir, 'sessions.json')
     this.loadData()
