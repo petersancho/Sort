@@ -1,8 +1,12 @@
 'use client'
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
+import AnimatedHero from '@/components/AnimatedHero'
 import { 
   FolderOpen, 
   FileText, 
@@ -13,7 +17,10 @@ import {
   BarChart3,
   Zap,
   Plus,
-  X
+  X,
+  Calendar as CalendarIcon,
+  TrendingUp,
+  Users
 } from 'lucide-react'
 
 interface SystemStats {
@@ -164,18 +171,13 @@ export default function HomePage() {
   return (
     <div className="p-8">
       <div className="max-w-7xl mx-auto">
-        {/* Welcome Section */}
-        <motion.div 
-          initial={{ opacity: 0, y: -20 }}
+        {/* Animated Hero */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-12"
+          className="mb-12"
         >
-          <h1 className="text-4xl font-bold text-black mb-4">
-            Welcome to Sort System
-          </h1>
-          <p className="text-lg text-black max-w-2xl mx-auto">
-            Your comprehensive file organization platform for projects, finances, and task management
-          </p>
+          <AnimatedHero />
         </motion.div>
 
         {/* Stats Dashboard */}

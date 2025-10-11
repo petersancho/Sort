@@ -59,8 +59,11 @@ export default function TodosPage() {
     description: '',
     priority: 'medium' as const,
     due_date: '',
-    project_id: ''
+    project_id: '',
+    timeframe: 'day' as 'day' | 'week' | 'month' | 'year' | '5year' | '10year'
   })
+  
+  const [selectedTimeframe, setSelectedTimeframe] = useState<string>('all')
 
   useEffect(() => {
     loadTodos()

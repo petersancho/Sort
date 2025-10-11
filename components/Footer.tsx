@@ -50,19 +50,17 @@ export default function Footer() {
           <div>
             <h3 className="font-bold text-black mb-4 font-serif italic">Connect</h3>
             <ul className="space-y-2 text-sm">
-              <li className="flex items-center gap-2 text-gray-600">
-                <Mail className="h-4 w-4" />
-                <span>support@sort-system.app</span>
+              <li>
+                <Link href="/contact" className="text-gray-600 hover:text-black transition-colors">Contact Us</Link>
+              </li>
+              <li>
+                <Link href="/support" className="text-gray-600 hover:text-black transition-colors">Support Center</Link>
               </li>
               <li className="flex items-center gap-2 text-gray-600">
                 <Github className="h-4 w-4" />
                 <a href="https://github.com/petersancho/Sort" target="_blank" rel="noopener noreferrer" className="hover:text-black transition-colors">
                   GitHub
                 </a>
-              </li>
-              <li className="flex items-center gap-2 text-gray-600">
-                <FileText className="h-4 w-4" />
-                <Link href="/settings" className="hover:text-black transition-colors">Documentation</Link>
               </li>
             </ul>
           </div>
