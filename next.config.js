@@ -4,6 +4,8 @@ const nextConfig = {
   reactStrictMode: true,
   experimental: {
     forceSwcTransforms: true,
+    workerThreads: false,
+    cpus: 1,
   },
   webpack: (config) => {
     config.resolve.fallback = {
