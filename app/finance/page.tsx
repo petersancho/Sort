@@ -264,53 +264,92 @@ export default function FinancePage() {
 
         {/* Summary Cards */}
         {summary && (
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <div className="card p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Documents</p>
-                  <p className="text-3xl font-bold text-gray-900 dark:text-white">{summary.totalDocuments}</p>
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+              <div className="card p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-bold text-gray-600 dark:text-gray-400">TOTAL DOCUMENTS</p>
+                    <p className="text-3xl font-bold text-gray-900 dark:text-white">{summary.totalDocuments}</p>
+                  </div>
+                  <FileText className="h-8 w-8 text-black" />
                 </div>
-                <FileText className="h-8 w-8 text-blue-500" />
+              </div>
+              
+              <div className="card p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-bold text-gray-600 dark:text-gray-400">TOTAL AMOUNT</p>
+                    <p className="text-3xl font-bold text-gray-900 dark:text-white">
+                      ${summary.totalAmount.toLocaleString()}
+                    </p>
+                  </div>
+                  <DollarSign className="h-8 w-8 text-black" />
+                </div>
+              </div>
+              
+              <div className="card p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-bold text-gray-600 dark:text-gray-400">CATEGORIES</p>
+                    <p className="text-3xl font-bold text-gray-900 dark:text-white">
+                      {Object.keys(summary.byCategory).length}
+                    </p>
+                  </div>
+                  <PieChart className="h-8 w-8 text-black" />
+                </div>
+              </div>
+              
+              <div className="card p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-bold text-gray-600 dark:text-gray-400">THIS MONTH</p>
+                    <p className="text-3xl font-bold text-gray-900 dark:text-white">
+                      ${summary.monthlySpending[0]?.amount.toLocaleString() || '0'}
+                    </p>
+                  </div>
+                  <TrendingUp className="h-8 w-8 text-black" />
+                </div>
               </div>
             </div>
-            
-            <div className="card p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Amount</p>
-                  <p className="text-3xl font-bold text-green-600">
-                    ${summary.totalAmount.toLocaleString()}
-                  </p>
+
+            {/* Financial Widgets */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+              {/* Spending by Category Widget */}
+              <div className="card p-6">
+                <h3 className="text-xl font-bold italic text-black mb-4">SPENDING BY CATEGORY</h3>
+                <div className="space-y-3">
+                  {Object.entries(summary.byCategory).slice(0, 5).map(([category, data]: [string, any]) => (
+                    <div key={category}>
+                      <div className="flex justify-between mb-1">
+                        <span className="text-sm font-bold">{category.toUpperCase()}</span>
+                        <span className="text-sm font-bold">${data.amount.toLocaleString()}</span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div 
+                          className="bg-black h-2 rounded-full transition-all duration-500"
+                          style={{ width: `${(data.amount / summary.totalAmount) * 100}%` }}
+                        />
+                      </div>
+                    </div>
+                  ))}
                 </div>
-                <DollarSign className="h-8 w-8 text-green-500" />
+              </div>
+
+              {/* Monthly Trend Widget */}
+              <div className="card p-6">
+                <h3 className="text-xl font-bold italic text-black mb-4">MONTHLY TREND</h3>
+                <div className="space-y-3">
+                  {summary.monthlySpending.slice(0, 6).map((month: any) => (
+                    <div key={month.month} className="flex justify-between items-center">
+                      <span className="text-sm font-bold">{month.month.toUpperCase()}</span>
+                      <span className="text-sm font-bold">${month.amount.toLocaleString()}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
-            
-            <div className="card p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Categories</p>
-                  <p className="text-3xl font-bold text-gray-900 dark:text-white">
-                    {Object.keys(summary.byCategory).length}
-                  </p>
-                </div>
-                <PieChart className="h-8 w-8 text-purple-500" />
-              </div>
-            </div>
-            
-            <div className="card p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">This Month</p>
-                  <p className="text-3xl font-bold text-gray-900 dark:text-white">
-                    ${summary.monthlySpending[0]?.amount.toLocaleString() || '0'}
-                  </p>
-                </div>
-                <TrendingUp className="h-8 w-8 text-orange-500" />
-              </div>
-            </div>
-          </div>
+          </>
         )}
 
         {/* Filters and Search */}

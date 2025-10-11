@@ -24,7 +24,7 @@ import {
 
 const navigation = [
   { name: 'HOME', href: '/', icon: Home },
-  { name: 'FILES', href: '/scanner', icon: Scan },
+  { name: 'FILES', href: '/files', icon: Scan },
   { name: 'PROJECTS', href: '/projects', icon: FolderOpen },
   { name: 'FINANCE', href: '/finance', icon: DollarSign },
   { name: 'CALENDAR', href: '/calendar', icon: CalendarIcon },
